@@ -45,3 +45,42 @@ http.createServer(function (request, response) {
 
 }).listen(8125);
 console.log('Server running at http://127.0.0.1:8125/');
+
+// SQL :
+var mysql = require('mysql');
+
+var mySqlClient = mysql.createConnection({
+  host     : "localhost",
+  user     : "root",
+  password : "password",
+  database : "mysqlTest"
+});
+
+var selectQuery = 'SELECT * FROM test';
+
+
+
+function showSelectQuery() {
+  mySqlClient.query(
+      selectQuery,
+      function select(error, results, fields) {
+        if (error) {
+          console.log(error);
+          mySqlClient.end();
+          return;
+        }
+
+        if ( results.length > 0 )  {
+          var firstResult = results[ 0 ];
+          console.log('id: ' + firstResult['id']);
+          console.log('label: ' + firstResult['label']);
+          console.log('valeur: ' + firstResult['valeur']);
+        } else {
+          console.log("Pas de données");
+        }
+        mySqlClient.end();
+      }
+  );
+}
+
+showSelectQuery();
