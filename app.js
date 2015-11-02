@@ -56,5 +56,35 @@ app.use(function(err, req, res, next) {
   });
 });
 
+/*
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'password',
+  database : 'test'
+});
+/*
+var fs = require("fs");
+var contenu;
+
+contenu = fs.readFileSync("intro.mp3");
+
+connection.connect();
+var post  = [
+  1,
+   10,
+ contenu
+];
+
+connection.query('INSERT INTO `test`.`legume` (`type`, `nombre`,`content`) VALUES (?, ?,?);', post, function (err, result) {
+  if (!err)
+    console.log('success');
+  else
+    console.log('Error while performing Query.'+err);
+});
+
+connection.end();
+*/
 
 module.exports = app;

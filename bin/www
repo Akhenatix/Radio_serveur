@@ -1,4 +1,45 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('untitled1:server');
 var http = require('http');
+var express = require('express');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+console.log('server avaible http://127.0.0.1:3000/');
+
+var io = require('socket.io')(server);
+io.sockets.on('connection', function(socket) {
+	console.log('Connection');
+	var secure='download';
+	app.get('/'+secure, function(req, res) {
+		res.download(__dirname + '/../intro.mp3'); // Set disposition and send it.
+	});
+	socket.emit('recu','http://192.168.137.101:3000/'+secure);
+
+});
+/*
+
 var fs = require('fs');
 var path = require('path');
 http.createServer(function (request, response) {
@@ -44,43 +85,58 @@ http.createServer(function (request, response) {
 	});
 
 }).listen(8125);
-console.log('Server running at http://127.0.0.1:8125/');
+console.log('Server running at http://127.0.0.1:8125/');*/
 
-// SQL :
-var mysql = require('mysql');
+/**
+ * Event listener for HTTP server "error" event.
+ */
 
-var mySqlClient = mysql.createConnection({
-  host     : "localhost",
-  user     : "root",
-  password : "password",
-  database : "mysqlTest"
-});
+function normalizePort(val) {
+	var port = parseInt(val, 10);
 
-var selectQuery = 'SELECT * FROM test';
+	if (isNaN(port)) {
+		// named pipe
+		return val;
+	}
 
+	if (port >= 0) {
+		// port number
+		return port;
+	}
 
-
-function showSelectQuery() {
-  mySqlClient.query(
-      selectQuery,
-      function select(error, results, fields) {
-        if (error) {
-          console.log(error);
-          mySqlClient.end();
-          return;
-        }
-
-        if ( results.length > 0 )  {
-          var firstResult = results[ 0 ];
-          console.log('id: ' + firstResult['id']);
-          console.log('label: ' + firstResult['label']);
-          console.log('valeur: ' + firstResult['valeur']);
-        } else {
-          console.log("Pas de données");
-        }
-        mySqlClient.end();
-      }
-  );
+	return false;
 }
 
-showSelectQuery();
+
+function onError(error) {
+	if (error.syscall !== 'listen') {
+		throw error;
+	}
+
+	var bind = typeof port === 'string'
+		? 'Pipe ' + port
+		: 'Port ' + port;
+
+	// handle specific listen errors with friendly messages
+	switch (error.code) {
+		case 'EACCES':
+			console.error(bind + ' requires elevated privileges');
+			process.exit(1);
+			break;
+		case 'EADDRINUSE':
+			console.error(bind + ' is already in use');
+			process.exit(1);
+			break;
+		default:
+			throw error;
+	}
+}
+
+
+function onListening() {
+	var addr = server.address();
+	var bind = typeof addr === 'string'
+		? 'pipe ' + addr
+		: 'port ' + addr.port;
+	debug('Listening on ' + bind);
+}

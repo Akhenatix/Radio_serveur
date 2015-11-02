@@ -15,7 +15,8 @@
     "serve-favicon": "~2.3.0",
     "http":"*",
     "fs":"*",
-    "mysql":"*",
-    "path":"*"
+    "path":"*",
+  "mysql":"*",
+    "socket.io":"*"
   }
 }
